@@ -8,15 +8,17 @@ import {
   Input,
   SimpleGrid,
   Text,
-} from '@chakra-ui/react';
-import { Alchemy, Network, Nft, OwnedNftsResponse } from 'alchemy-sdk';
-import { useState } from 'react';
+} from "@chakra-ui/react";
+import { Alchemy, Network, Nft, OwnedNftsResponse } from "alchemy-sdk";
+import { useState } from "react";
 
 const { VITE_ALCHEMY_API_KEY } = import.meta.env;
 
 function App() {
-  const [userAddress, setUserAddress] = useState('');
-  const [ownedNfts, setOwnedNfts] = useState<OwnedNftsResponse['ownedNfts']>([]);
+  const [userAddress, setUserAddress] = useState("");
+  const [ownedNfts, setOwnedNfts] = useState<OwnedNftsResponse["ownedNfts"]>(
+    []
+  );
   const [hasQueried, setHasQueried] = useState(false);
   const [tokenDataObjects, setTokenDataObjects] = useState<Nft[]>([]);
 
@@ -40,7 +42,7 @@ function App() {
       tokenDataPromises.push(tokenData);
     }
 
-    const nfts = await Promise.all(tokenDataPromises)
+    const nfts = await Promise.all(tokenDataPromises);
 
     setTokenDataObjects(nfts);
     setHasQueried(true);
@@ -49,9 +51,9 @@ function App() {
     <Box w="100vw">
       <Center>
         <Flex
-          alignItems={'center'}
+          alignItems={"center"}
           justifyContent="center"
-          flexDirection={'column'}
+          flexDirection={"column"}
         >
           <Heading mb={0} fontSize={36}>
             NFT Indexer 🖼
@@ -65,11 +67,13 @@ function App() {
         w="100%"
         flexDirection="column"
         alignItems="center"
-        justifyContent={'center'}
+        justifyContent={"center"}
       >
         <Heading mt={42}>Get all the ERC-721 tokens of this address:</Heading>
         <Input
-          onChange={(event: React.ChangeEvent<HTMLInputElement> ) => setUserAddress(event.target.value)}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setUserAddress(event.target.value)
+          }
           color="black"
           w="600px"
           textAlign="center"
@@ -84,15 +88,15 @@ function App() {
         <Heading my={36}>Here are your NFTs:</Heading>
 
         {hasQueried ? (
-          <SimpleGrid w={'90vw'} columns={4} spacing={24}>
+          <SimpleGrid w={"90vw"} columns={4} spacing={24}>
             {ownedNfts.map((nft, i) => {
-              const image = tokenDataObjects[i].rawMetadata?.image 
+              const image = tokenDataObjects[i].rawMetadata?.image;
               return (
                 <Flex
-                  flexDir={'column'}
+                  flexDir={"column"}
                   color="white"
                   bg="blue"
-                  w={'20vw'}
+                  w={"20vw"}
                   key={nft.tokenId}
                 >
                   <Box>
@@ -104,7 +108,7 @@ function App() {
             })}
           </SimpleGrid>
         ) : (
-          'Please make a query! The query may take a few seconds...'
+          "Please make a query! The query may take a few seconds..."
         )}
       </Flex>
     </Box>
