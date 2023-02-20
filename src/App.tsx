@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Alchemy, Network, Nft, OwnedNftsResponse } from "alchemy-sdk";
 import { useState } from "react";
+import { Loader } from "./components/Loader";
 import { useWeb3Account } from "./hooks/useWeb3Account";
 
 const { VITE_ALCHEMY_API_KEY } = import.meta.env;
@@ -22,11 +23,15 @@ function App() {
     []
   );
   const [hasQueried, setHasQueried] = useState(false);
+  const [isQuerying, setIsQuerying] = useState(false);
   const [tokenDataObjects, setTokenDataObjects] = useState<Nft[]>([]);
 
   const isConnected = account !== "";
 
   async function getNFTsForOwner() {
+    setIsQuerying(true);
+    setOwnedNfts([]);
+
     const config = {
       apiKey: VITE_ALCHEMY_API_KEY,
       network: Network.ETH_MAINNET,
@@ -49,6 +54,7 @@ function App() {
     const nfts = await Promise.all(tokenDataPromises);
 
     setTokenDataObjects(nfts);
+    setIsQuerying(false);
     setHasQueried(true);
   }
   return (
@@ -100,6 +106,8 @@ function App() {
         </Button>
 
         <Heading my={36}>Here are your NFTs:</Heading>
+
+        {isQuerying ? <Loader /> : null}
 
         {hasQueried ? (
           <SimpleGrid w={"90vw"} columns={4} spacing={24}>
