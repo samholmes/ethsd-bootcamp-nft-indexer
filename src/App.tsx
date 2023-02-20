@@ -11,16 +11,20 @@ import {
 } from "@chakra-ui/react";
 import { Alchemy, Network, Nft, OwnedNftsResponse } from "alchemy-sdk";
 import { useState } from "react";
+import { useWeb3Account } from "./hooks/useWeb3Account";
 
 const { VITE_ALCHEMY_API_KEY } = import.meta.env;
 
 function App() {
+  const [account, connect] = useWeb3Account();
   const [userAddress, setUserAddress] = useState("");
   const [ownedNfts, setOwnedNfts] = useState<OwnedNftsResponse["ownedNfts"]>(
     []
   );
   const [hasQueried, setHasQueried] = useState(false);
   const [tokenDataObjects, setTokenDataObjects] = useState<Nft[]>([]);
+
+  const isConnected = account !== "";
 
   async function getNFTsForOwner() {
     const config = {
@@ -49,6 +53,16 @@ function App() {
   }
   return (
     <Box w="100vw">
+      <nav>
+        <Flex alignItems="center" justifyContent="space-between">
+          <h1 className="logo">Ndex</h1>
+          {isConnected ? (
+            <Box>{account}</Box>
+          ) : (
+            <Button onClick={connect}>Connect</Button>
+          )}
+        </Flex>
+      </nav>
       <Center>
         <Flex
           alignItems={"center"}
