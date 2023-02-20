@@ -9,16 +9,16 @@ import {
   SimpleGrid,
   Text,
 } from '@chakra-ui/react';
-import { Alchemy, Network } from 'alchemy-sdk';
+import { Alchemy, Network, Nft, OwnedNftsResponse } from 'alchemy-sdk';
 import { useState } from 'react';
 
 const { VITE_ALCHEMY_API_KEY } = import.meta.env;
 
 function App() {
   const [userAddress, setUserAddress] = useState('');
-  const [results, setResults] = useState([]);
+  const [ownedNfts, setOwnedNfts] = useState<OwnedNftsResponse['ownedNfts']>([]);
   const [hasQueried, setHasQueried] = useState(false);
-  const [tokenDataObjects, setTokenDataObjects] = useState([]);
+  const [tokenDataObjects, setTokenDataObjects] = useState<Nft[]>([]);
 
   async function getNFTsForOwner() {
     const config = {
@@ -28,7 +28,7 @@ function App() {
 
     const alchemy = new Alchemy(config);
     const data = await alchemy.nft.getNftsForOwner(userAddress);
-    setResults(data);
+    setOwnedNfts(data.ownedNfts);
 
     const tokenDataPromises = [];
 
@@ -40,7 +40,9 @@ function App() {
       tokenDataPromises.push(tokenData);
     }
 
-    setTokenDataObjects(await Promise.all(tokenDataPromises));
+    const nfts = await Promise.all(tokenDataPromises)
+
+    setTokenDataObjects(nfts);
     setHasQueried(true);
   }
   return (
@@ -67,7 +69,7 @@ function App() {
       >
         <Heading mt={42}>Get all the ERC-721 tokens of this address:</Heading>
         <Input
-          onChange={(e) => setUserAddress(e.target.value)}
+          onChange={(event: React.ChangeEvent<HTMLInputElement> ) => setUserAddress(event.target.value)}
           color="black"
           w="600px"
           textAlign="center"
@@ -83,19 +85,20 @@ function App() {
 
         {hasQueried ? (
           <SimpleGrid w={'90vw'} columns={4} spacing={24}>
-            {results.ownedNfts.map((e, i) => {
+            {ownedNfts.map((nft, i) => {
+              const image = tokenDataObjects[i].rawMetadata?.image 
               return (
                 <Flex
                   flexDir={'column'}
                   color="white"
                   bg="blue"
                   w={'20vw'}
-                  key={e.id}
+                  key={nft.tokenId}
                 >
                   <Box>
                     <b>Name:</b> {tokenDataObjects[i].title}&nbsp;
                   </Box>
-                  <Image src={tokenDataObjects[i].rawMetadata.image} />
+                  <Image src={image} />
                 </Flex>
               );
             })}
