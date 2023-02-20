@@ -10,6 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Alchemy, Network, Nft, OwnedNftsResponse } from "alchemy-sdk";
+import { ethers } from "ethers";
 import { useState } from "react";
 import { Loader } from "./components/Loader";
 import { useWeb3Account } from "./hooks/useWeb3Account";
@@ -38,7 +39,20 @@ function App() {
     };
 
     const alchemy = new Alchemy(config);
-    const data = await alchemy.nft.getNftsForOwner(userAddress);
+
+    let address: string = userAddress;
+    try {
+      const result = await alchemy.core.resolveName(userAddress);
+      if (result != null) {
+        address = result;
+      }
+    } catch (error) {}
+
+    if (!ethers.utils.isAddress(address)) {
+      throw new Error("Invalid address");
+    }
+
+    const data = await alchemy.nft.getNftsForOwner(address);
     setOwnedNfts(data.ownedNfts);
 
     const tokenDataPromises = [];
@@ -91,6 +105,7 @@ function App() {
       >
         <Heading mt={42}>Get all the ERC-721 tokens of this address:</Heading>
         <Input
+          placeholder="Enter ethereum address or domain"
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             setUserAddress(event.target.value)
           }
@@ -117,9 +132,11 @@ function App() {
                 <Flex
                   flexDir={"column"}
                   color="white"
-                  bg="blue"
+                  bg="#111"
                   w={"20vw"}
                   key={nft.tokenId}
+                  borderRadius={6}
+                  padding={12}
                 >
                   <Box>
                     <b>Name:</b> {tokenDataObjects[i].title}&nbsp;
@@ -129,9 +146,7 @@ function App() {
               );
             })}
           </SimpleGrid>
-        ) : (
-          "Please make a query! The query may take a few seconds..."
-        )}
+        ) : null}
       </Flex>
     </Box>
   );

@@ -1,12 +1,11 @@
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 16px;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -29,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #0a0a0a;
 }
 
 nav {
@@ -40,13 +40,14 @@ nav {
 nav .logo {
   padding: 0;
   margin: 0;
+  text-transform: uppercase;
   letter-spacing: 0.3rem;
   line-height: 1em;
   font-weight: 100;
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 2rem;
   line-height: 1.1;
 }
 
@@ -104,4 +105,9 @@ button:focus-visible {
     -ms-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+.ellipsisIt {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
